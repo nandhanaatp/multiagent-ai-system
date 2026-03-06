@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-DATABASE_URL = "postgresql://postgres:newpassword123@localhost:5432/multi_agent_ai"
+DATABASE_URL = "sqlite:///./decision_logs.db"
 
 engine = create_engine(DATABASE_URL)
 
