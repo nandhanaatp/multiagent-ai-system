@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+logs/
+*.log
+
+# Environment variables
+.env
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc backend files
+BACKEND/out.txt
+BACKEND/ddgs_output.json
+BACKEND/scratch_ddg.py
+BACKEND/test_ddgs_logic.py
+BACKEND/db_test.py
+
+# Frontend
+node_modules/
+build/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

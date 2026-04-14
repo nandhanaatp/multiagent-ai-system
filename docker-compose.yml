@@ -1,0 +1,32 @@
+services:
+  backend:
+    build: ./BACKEND
+    container_name: ai_backend
+    env_file: ./BACKEND/.env
+    volumes:
+      - db_data:/app
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        REACT_APP_API_URL: /api
+    container_name: ai_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  db_data:
