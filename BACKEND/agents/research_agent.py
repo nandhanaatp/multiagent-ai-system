@@ -24,38 +24,12 @@ class ResearchAgent(BaseAgent):
 
     def _call_llm(self, problem_description: str, subtasks: List[str]) -> Dict[str, Any]:
         subtasks_text = "\n".join(f"- {s}" for s in subtasks)
-        
-        # Real-Time Web Search
-        web_context = ""
-        try:
-            from duckduckgo_search import DDGS
-            with DDGS() as ddgs:
-                # Try fetching news from the past week first
-                results = list(ddgs.text(problem_description + " latest news", max_results=3, timelimit='w'))
-                if not results:
-                    # Fallback to past month
-                    results = list(ddgs.text(problem_description, max_results=3, timelimit='m'))
-                if not results:
-                    # Ultimate fallback: No time limit (for lists, comprehensive research, older articles)
-                    results = list(ddgs.text(problem_description, max_results=4))
-                
-                if results:
-                    web_context = "### REAL-TIME LIVE WEB DATA (MUST USE) ###\n"
-                    for r in results:
-                        web_context += f"- Source ({r.get('title', '')}): {r.get('body', '')}\n"
-        except Exception as e:
-            web_context = f"### Web Search Unavailable ###\nError: {e}\n"
-
-        user_content = f"Problem: {problem_description}\n\nSubtasks:\n{subtasks_text}"
-        if web_context:
-            user_content += f"\n\n{web_context}\n\nCRITICAL INSTRUCTION: You MUST align your answer, findings, and context with the REAL-TIME LIVE WEB DATA provided above. Ignore your outdated training data if it contradicts the live web search context."
-
         try:
             response = client.chat.completions.create(
                 model="llama-3.1-8b-instant",
                 messages=[
                     {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "user", "content": user_content}
+                    {"role": "user", "content": f"Problem: {problem_description}\n\nSubtasks:\n{subtasks_text}"}
                 ],
                 temperature=0.3,
                 max_tokens=512

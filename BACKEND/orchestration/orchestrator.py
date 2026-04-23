@@ -8,6 +8,7 @@ from agents.validation_agent import ValidationAgent
 from agents.explanation_agent import ExplanationAgent
 from agents.adversarial_agent import AdversarialAgent
 from logger import get_logger
+from concurrent.futures import ThreadPoolExecutor
 
 logger = get_logger("orchestrator")
 
@@ -167,7 +168,7 @@ class Orchestrator:
             raise
 
     def _run_problem_solving(self, problem_description: str) -> dict:
-        # Step 1: Decompose
+        # Step 1: Decompose (must run first — others depend on subtasks)
         try:
             decomposer_result = self.decomposer_agent.analyze(problem_description)
             subtasks = decomposer_result.get("subtasks", [])
@@ -177,28 +178,40 @@ class Orchestrator:
             decomposer_result = {"agent": "TaskDecomposerAgent", "score": 5.0, "decision": "MEDIUM", "reason": f"Failed: {str(e)}", "subtasks": []}
             subtasks = []
 
-        # Step 2: Research
-        try:
-            research_result = self.research_agent.analyze(problem_description, {"subtasks": subtasks})
-            findings = research_result.get("findings", [])
-            logger.info(f"Research completed with {len(findings)} findings")
-        except Exception as e:
-            logger.error(f"Research Agent failed: {str(e)}")
-            research_result = {"agent": "ResearchAgent", "score": 5.0, "decision": "RESEARCHED", "reason": f"Failed: {str(e)}", "findings": [], "context": "", "references": []}
-            findings = []
+        # Steps 2 & 3: Research + Execution in parallel
+        research_result = None
+        execution_result = None
 
-        # Step 3: Execute
-        try:
-            execution_result = self.execution_agent.analyze(problem_description, {"subtasks": subtasks, "findings": findings})
-            solution = execution_result.get("solution", "")
-            steps = execution_result.get("steps", [])
-            logger.info(f"Execution completed: {execution_result.get('decision')}")
-        except Exception as e:
-            logger.error(f"Execution Agent failed: {str(e)}")
-            execution_result = {"agent": "ExecutionAgent", "score": 5.0, "decision": "MEDIUM", "reason": f"Failed: {str(e)}", "solution": "", "steps": []}
-            solution, steps = "", []
+        def run_research():
+            return self.research_agent.analyze(problem_description, {"subtasks": subtasks})
 
-        # Step 4: Validate
+        def run_execution():
+            return self.execution_agent.analyze(problem_description, {"subtasks": subtasks, "findings": []})
+
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            f_research  = executor.submit(run_research)
+            f_execution = executor.submit(run_execution)
+
+            try:
+                research_result = f_research.result()
+                findings = research_result.get("findings", [])
+                logger.info(f"Research completed with {len(findings)} findings")
+            except Exception as e:
+                logger.error(f"Research Agent failed: {str(e)}")
+                research_result = {"agent": "ResearchAgent", "score": 5.0, "decision": "RESEARCHED", "reason": f"Failed: {str(e)}", "findings": [], "context": "", "references": []}
+                findings = []
+
+            try:
+                execution_result = f_execution.result()
+                solution = execution_result.get("solution", "")
+                steps = execution_result.get("steps", [])
+                logger.info(f"Execution completed: {execution_result.get('decision')}")
+            except Exception as e:
+                logger.error(f"Execution Agent failed: {str(e)}")
+                execution_result = {"agent": "ExecutionAgent", "score": 5.0, "decision": "MEDIUM", "reason": f"Failed: {str(e)}", "solution": "", "steps": []}
+                solution, steps = "", []
+
+        # Step 4: Validate (depends on execution output)
         try:
             validation_result = self.validation_agent.analyze(problem_description, {"subtasks": subtasks, "solution": solution, "steps": steps})
             logger.info(f"Validation completed: {validation_result.get('decision')}")
