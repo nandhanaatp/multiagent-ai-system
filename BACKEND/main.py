@@ -788,6 +788,7 @@ def root():
         database_connected=True
     )
 
+
 @app.get("/health", response_model=HealthResponse)
 @app.head("/health")
 def health_check(db: Session = Depends(get_db)):
@@ -799,7 +800,7 @@ def health_check(db: Session = Depends(get_db)):
     except Exception as e:
         db_connected = False
         logger.error(f"Health check failed: {str(e)}")
-
+    
     return HealthResponse(
         status="healthy" if db_connected else "unhealthy",
         message="Multi-Agent AI Orchestration API",

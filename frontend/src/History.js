@@ -1,25 +1,26 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { getToken } from './AuthContext';
+import { Download, History as HistoryIcon, Search, ShieldCheck, Zap } from 'lucide-react';
 import './History.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000';
 
-const DECISION_COLORS = {
-  BLOCK: '#dc2626', REVIEW: '#f59e0b', ALLOW: '#16a34a',
-  APPROVED: '#16a34a', NEEDS_IMPROVEMENT: '#f59e0b', REJECTED: '#dc2626'
-};
-const DECISION_ICONS = {
-  BLOCK: '🚫', REVIEW: '⚠️', ALLOW: '✅',
-  APPROVED: '✅', NEEDS_IMPROVEMENT: '⚠️', REJECTED: '🚫'
+const DECISION_META = {
+  BLOCK: { icon: '🚫', color: 'var(--danger)', bg: 'var(--danger-bg)' },
+  REVIEW: { icon: '⚠️', color: 'var(--warning)', bg: 'var(--warning-bg)' },
+  ALLOW: { icon: '✅', color: 'var(--success)', bg: 'var(--success-bg)' },
+  APPROVED: { icon: '✅', color: 'var(--success)', bg: 'var(--success-bg)' },
+  NEEDS_IMPROVEMENT: { icon: '⚠️', color: 'var(--warning)', bg: 'var(--warning-bg)' },
+  REJECTED: { icon: '🚫', color: 'var(--danger)', bg: 'var(--danger-bg)' },
 };
 
-function History({ onClose }) {
+function History() {
   const [history, setHistory] = useState([]);
   const [total, setTotal]     = useState(0);
   const [offset, setOffset]   = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(null);
-  const LIMIT = 5;
+  const LIMIT = 10;
 
   const fetchHistory = useCallback(async () => {
     setLoading(true);
@@ -81,52 +82,104 @@ function History({ onClose }) {
   }, [fetchHistory]);
 
   return (
-    <div className="history-overlay">
-      <div className="history-panel">
-        <div className="history-header">
-          <h2>📜 Decision History</h2>
-          <div style={{ marginLeft: 'auto', marginRight: '1rem' }}>
-            <button 
-              onClick={handleExportCsv} 
-              style={{ background: '#10b981', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' }}
-            >
-              ⬇️ Export CSV
-            </button>
-          </div>
-          <button className="history-close" onClick={onClose}>✕</button>
+    <div className="history-container">
+      <div className="history-header">
+        <div className="history-title-group">
+          <HistoryIcon size={24} />
+          <span>Audit Trail</span>
         </div>
+        <div className="history-actions">
+          <button onClick={handleExportCsv} className="btn-export">
+            <Download size={16} /> Export CSV
+          </button>
+        </div>
+      </div>
 
-        {loading && <div className="history-loading"><div className="spinner"></div></div>}
-        {error   && <div className="history-error">⚠️ {error}</div>}
-
-        {!loading && !error && history.length === 0 && (
-          <div className="history-empty">No analysis history yet. Run your first analysis!</div>
+      <div className="history-content">
+        {loading && (
+          <div className="history-loading">
+            <div className="spinner"></div>
+            <p>Loading audit trail...</p>
+          </div>
         )}
 
-        {!loading && history.map((item) => (
-          <div key={item.query_id} className="history-item">
-            <div className="history-item-top">
-              <span className="history-decision" style={{ color: DECISION_COLORS[item.final_decision] }}>
-                {DECISION_ICONS[item.final_decision]} {item.final_decision}
-              </span>
-              <span className="history-date">
-                {new Date(item.created_at).toLocaleString()}
-              </span>
-            </div>
-            <div className="history-item-meta">
-              <span className={`history-mode-badge ${item.mode}`}>
-                {item.mode === 'governance' ? '🛡️ Governance' : '🤖 Problem Solving'}
-              </span>
-            </div>
-            <div className="history-query">{item.query_text}</div>
+        {error && (
+          <div className="auth-error" style={{ margin: '1.5rem' }}>
+            ⚠️ {error}
           </div>
-        ))}
+        )}
 
-        {total > LIMIT && (
+        {!loading && !error && history.length === 0 && (
+          <div className="history-empty">
+            <Search size={48} />
+            <p>No analysis history yet. Run your first analysis to see it here.</p>
+          </div>
+        )}
+
+        {!loading && !error && history.length > 0 && (
+          <div className="history-table-wrapper">
+            <table className="history-table">
+              <thead>
+                <tr>
+                  <th>Date & Time</th>
+                  <th>Mode</th>
+                  <th>Outcome</th>
+                  <th>Query Text</th>
+                </tr>
+              </thead>
+              <tbody>
+                {history.map((item) => {
+                  const meta = DECISION_META[item.final_decision] || { icon: '❓', color: 'var(--text-muted)', bg: 'var(--bg-hover)' };
+                  return (
+                    <tr key={item.query_id}>
+                      <td style={{ whiteSpace: 'nowrap' }}>
+                        {new Date(item.created_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                      </td>
+                      <td>
+                        <span className={`mode-badge ${item.mode}`}>
+                          {item.mode === 'governance' ? <ShieldCheck size={12}/> : <Zap size={12}/>}
+                          {item.mode === 'governance' ? 'Governance' : 'Problem Solving'}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="badge" style={{ backgroundColor: meta.bg, color: meta.color, border: `1px solid ${meta.color}40` }}>
+                          <span style={{ marginRight: '0.25rem' }}>{meta.icon}</span> {item.final_decision}
+                        </span>
+                      </td>
+                      <td className="query-cell">
+                        <span className="query-text-truncate" title={item.query_text}>
+                          {item.query_text}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {!loading && total > LIMIT && (
           <div className="history-pagination">
-            <button disabled={offset === 0} onClick={() => setOffset(o => o - LIMIT)}>← Prev</button>
-            <span>{Math.floor(offset / LIMIT) + 1} / {Math.ceil(total / LIMIT)}</span>
-            <button disabled={offset + LIMIT >= total} onClick={() => setOffset(o => o + LIMIT)}>Next →</button>
+            <div className="pagination-info">
+              Showing {offset + 1} to {Math.min(offset + LIMIT, total)} of {total} entries
+            </div>
+            <div className="pagination-controls">
+              <button 
+                className="btn-page" 
+                disabled={offset === 0} 
+                onClick={() => setOffset(o => o - LIMIT)}
+              >
+                Previous
+              </button>
+              <button 
+                className="btn-page" 
+                disabled={offset + LIMIT >= total} 
+                onClick={() => setOffset(o => o + LIMIT)}
+              >
+                Next
+              </button>
+            </div>
           </div>
         )}
       </div>

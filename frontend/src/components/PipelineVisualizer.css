@@ -1,0 +1,121 @@
+.pipeline-container {
+  width: 100%;
+  max-width: 56rem;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-medium);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.pipeline-glow-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to right, rgba(37, 99, 235, 0.05), rgba(147, 51, 234, 0.05));
+  pointer-events: none;
+}
+
+.pipeline-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.pipeline-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.pipeline-title svg {
+  color: var(--primary-color);
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.pipeline-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.pipeline-track-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+}
+
+.pipeline-bg-line {
+  position: absolute;
+  left: 2.5rem;
+  right: 2.5rem;
+  top: 1.5rem;
+  height: 4px;
+  background-color: var(--bg-secondary);
+  z-index: 0;
+}
+
+.pipeline-active-line {
+  position: absolute;
+  left: 2.5rem;
+  top: 1.5rem;
+  height: 4px;
+  background-color: var(--primary-color);
+  z-index: 0;
+  transition: width 1s ease-in-out;
+}
+
+.pipeline-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+  width: 6rem;
+}
+
+.pipeline-icon-circle {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid;
+  margin-bottom: 0.75rem;
+}
+
+.pipeline-icon-circle svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.pipeline-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.25;
+}
+
+.pipeline-processing-badge {
+  position: absolute;
+  bottom: -1.5rem;
+  font-size: 0.625rem;
+  color: var(--primary-color);
+  font-weight: 500;
+  white-space: nowrap;
+  background-color: rgba(30, 58, 138, 0.3);
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+}

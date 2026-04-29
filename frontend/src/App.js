@@ -16,6 +16,7 @@ import UserProfile from "./UserProfile";
 import AdminDashboard from "./AdminDashboard";
 import LandingPage from "./LandingPage";
 import { Toaster } from "react-hot-toast";
+import { Activity, Search, ShieldAlert, History as HistoryIcon, Settings, User, Menu, X, LogOut, ShieldCheck, PieChart } from "lucide-react";
 import "./App.css";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
@@ -26,17 +27,19 @@ function App() {
   const [showRegister, setShowRegister] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetToken, setResetToken] = useState(null);
+  
+  // App State
+  const [activeTab, setActiveTab] = useState("analysis");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Analysis State
   const [problemDescription, setProblemDescription] = useState("");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [showHistory, setShowHistory] = useState(false);
-  const [showDashboard, setShowDashboard] = useState(false);
-  const [showPolicyBuilder, setShowPolicyBuilder] = useState(false);
-  const [showProfile, setShowProfile] = useState(false);
-  const [showAdminDashboard, setShowAdminDashboard] = useState(false);
   const [mode, setMode] = useState("governance");
 
+  // Simulation State
   const [isSimulation, setIsSimulation] = useState(false);
   const [altDescription, setAltDescription] = useState("");
   const [altResult, setAltResult] = useState(null);
@@ -59,11 +62,9 @@ function App() {
 
   if (authLoading) {
     return (
-      <div className="app">
-        <div className="loading-section">
-          <div className="spinner"></div>
-          <p>Loading...</p>
-        </div>
+      <div className="loading-screen">
+        <div className="spinner"></div>
+        <p>Loading AI Governance Platform...</p>
       </div>
     );
   }
@@ -83,7 +84,7 @@ function App() {
         <div style={{ position: "relative" }}>
           <button 
             onClick={() => setShowLogin(false)} 
-            style={{ position: "absolute", top: "20px", left: "20px", zIndex: 100, padding: "8px 16px", background: "rgba(255,255,255,0.1)", color: "white", border: "none", borderRadius: "8px", cursor: "pointer" }}
+            style={{ position: "absolute", top: "20px", left: "20px", zIndex: 100, padding: "8px 16px", background: "rgba(255,255,255,0.1)", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", backdropFilter: "blur(4px)" }}
           >
             ← Back to Home
           </button>
@@ -161,189 +162,201 @@ function App() {
 
   const isFormValid = problemDescription.trim().length >= 10 && (!isSimulation || altDescription.trim().length >= 10);
 
+  const getPageTitle = () => {
+    switch(activeTab) {
+      case "analysis": return "AI Analysis Hub";
+      case "dashboard": return "Analytics Dashboard";
+      case "history": return "Audit History";
+      case "policy": return "Policy Builder";
+      case "profile": return "User Profile";
+      case "admin": return "Admin Command Center";
+      default: return "AI Governance Platform";
+    }
+  };
+
   return (
     <ErrorBoundary>
-      <Toaster position="top-right" toastOptions={{ style: { background: '#1e293b', color: '#f8fafc' } }} />
-      <div className="app">
-        <header className="header">
-          <div className="header-content">
-            <div className="logo">🤖 AI Governance</div>
-            <h1 className="title">Explainable Multi-Agent Risk Governance System</h1>
-            <p className="subtitle">Powered by intelligent decision-making agents</p>
+      <Toaster position="top-right" toastOptions={{ style: { background: '#1e293b', color: '#f8fafc', border: '1px solid #334155' } }} />
+      <div className="app-container">
+        
+        {/* Sidebar */}
+        <aside className={`sidebar ${mobileMenuOpen ? 'mobile-open' : ''}`}>
+          <div className="sidebar-header">
+            <div className="brand-logo">
+              <ShieldCheck size={24} /> <span>AIGov Platform</span>
+            </div>
           </div>
           
-          <div className="user-info">
-            <div className="user-avatar">
-              {user?.username?.charAt(0).toUpperCase()}
-            </div>
-            <div className="user-details">
-              <div className="user-name">{user?.full_name || user?.username}</div>
-              <div className="user-email">{user?.email}</div>
-            </div>
-            <button onClick={() => setShowProfile(true)} className="history-button" style={{ marginLeft: "auto" }}>👤 Profile</button>
+          <nav className="sidebar-nav">
+            <button className={`nav-item ${activeTab === 'analysis' ? 'active' : ''}`} onClick={() => { setActiveTab('analysis'); setMobileMenuOpen(false); }}>
+              <Search /> <span>Analysis Hub</span>
+            </button>
+            <button className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('dashboard'); setMobileMenuOpen(false); }}>
+              <PieChart /> <span>Dashboard</span>
+            </button>
+            <button className={`nav-item ${activeTab === 'history' ? 'active' : ''}`} onClick={() => { setActiveTab('history'); setMobileMenuOpen(false); }}>
+              <HistoryIcon /> <span>Audit History</span>
+            </button>
+            <button className={`nav-item ${activeTab === 'policy' ? 'active' : ''}`} onClick={() => { setActiveTab('policy'); setMobileMenuOpen(false); }}>
+              <Settings /> <span>Policy Builder</span>
+            </button>
             {user?.is_admin && (
-              <button 
-                onClick={() => setShowAdminDashboard(true)} 
-                className="history-button" 
-                style={{ background: "rgba(220, 38, 38, 0.9)", borderColor: "#ef4444" }}
-              >
-                🛡️ Admin
+              <button className={`nav-item ${activeTab === 'admin' ? 'active' : ''}`} onClick={() => { setActiveTab('admin'); setMobileMenuOpen(false); }} style={{ marginTop: '1rem', borderTop: '1px solid var(--border-default)', paddingTop: '1.5rem', borderRadius: 0 }}>
+                <ShieldAlert className="text-red-400" /> <span className="text-red-400">Admin Center</span>
               </button>
             )}
-            <button onClick={() => setShowDashboard(true)} className="history-button">📊 Dashboard</button>
-            <button onClick={() => setShowHistory(true)} className="history-button">📜 History</button>
-            <button onClick={() => setShowPolicyBuilder(true)} className="history-button">⚙️ Policy Builder</button>
+          </nav>
+          
+          <div className="sidebar-footer">
+            <button className="nav-item text-red-400" onClick={logout}>
+              <LogOut size={18} /> <span>Logout</span>
+            </button>
           </div>
-        </header>
+        </aside>
 
-        {showAdminDashboard && <AdminDashboard onClose={() => setShowAdminDashboard(false)} />}
-        {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
-        {showHistory && <History onClose={() => setShowHistory(false)} />}
-        {showDashboard && <Dashboard onClose={() => setShowDashboard(false)} />}
-        {showPolicyBuilder && <PolicyBuilder onClose={() => setShowPolicyBuilder(false)} />}
-
-        <div className="dashboard">
-          {sessionWarning && (
-            <div className="session-warning">
-              ⚠️ Your session is about to expire. Please save your work.
-              <button onClick={logout} className="session-logout-btn">Logout</button>
+        {/* Main Content Wrapper */}
+        <div className="main-wrapper">
+          
+          {/* Navbar */}
+          <header className="navbar">
+            <div className="navbar-left">
+              <button className="btn-icon d-md-none" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ display: window.innerWidth <= 768 ? 'block' : 'none' }}>
+                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+              <h1 className="page-title">{getPageTitle()}</h1>
             </div>
-          )}
-
-          <InputForm
-            mode={mode}
-            setMode={handleModeChange}
-            problemDescription={problemDescription}
-            setProblemDescription={setProblemDescription}
-            isSimulation={isSimulation}
-            setIsSimulation={setIsSimulation}
-            altDescription={altDescription}
-            setAltDescription={setAltDescription}
-            error={error}
-            setError={setError}
-            loading={loading}
-            handleAnalyze={handleAnalyze}
-            isFormValid={isFormValid}
-          />
-
-          {loading && (
-            <PipelineVisualizer mode={mode} />
-          )}
-
-          {result && !isSimulation && (
-            <>
-              <AgentResults result={result} />
-              {result.mode === "governance" && (
-                <ReportViewer
-                  result={result}
-                  problemDescription={problemDescription}
-                />
-              )}
-            </>
-          )}
-
-          {result && altResult && isSimulation && (
-            <div className="simulation-insights" style={{ marginBottom: "2rem" }}>
-              <div style={{ background: "white", padding: "1.5rem", borderRadius: "12px", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)", border: "1px solid #e2e8f0" }}>
-                <h2 style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: 0, color: "#1e293b", borderBottom: "2px solid #f1f5f9", paddingBottom: "0.75rem" }}>
-                  ⚖️ Decision Comparison Insight
-                </h2>
-                
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem", marginTop: "1.5rem" }}>
-                  {/* Decision Change */}
-                  <div style={{ background: "#f8fafc", padding: "1rem", borderRadius: "8px", border: "1px solid #e2e8f0", textAlign: "center" }}>
-                    <span style={{ display: "block", fontSize: "0.85rem", textTransform: "uppercase", fontWeight: "bold", color: "#64748b", marginBottom: "0.5rem" }}>Decision Change</span>
-                    <div style={{ fontSize: "1.2rem", fontWeight: "bold", color: "#0f172a" }}>
-                      <span style={{ color: result.governance_output?.decision === 'BLOCK' ? '#dc2626' : '#1e293b' }}>{result.governance_output?.decision}</span> 
-                      {" ➔ "} 
-                      <span style={{ color: altResult.governance_output?.decision === 'ALLOW' ? '#16a34a' : '#1e293b' }}>{altResult.governance_output?.decision}</span>
-                    </div>
-                  </div>
-
-                  {/* Risk Change */}
-                  {(() => {
-                    const r1 = result.risk_output?.score || 0;
-                    const r2 = altResult.risk_output?.score || 0;
-                    const diff = r1 - r2;
-                    const isImproved = diff > 0;
-                    return (
-                      <div style={{ background: isImproved ? "#f0fdf4" : (diff < 0 ? "#fef2f2" : "#f8fafc"), padding: "1rem", borderRadius: "8px", border: "1px solid", borderColor: isImproved ? "#bbf7d0" : (diff < 0 ? "#fecaca" : "#e2e8f0"), textAlign: "center" }}>
-                        <span style={{ display: "block", fontSize: "0.85rem", textTransform: "uppercase", fontWeight: "bold", color: isImproved ? "#166534" : (diff < 0 ? "#991b1b" : "#64748b"), marginBottom: "0.5rem" }}>Risk Indicator</span>
-                        <div style={{ fontSize: "1.2rem", fontWeight: "bold", color: "#0f172a" }}>
-                          {r1} ➔ {r2} 
-                          <span style={{ color: isImproved ? '#16a34a' : (diff < 0 ? '#dc2626' : '#64748b'), marginLeft: "0.5rem", fontSize: "1rem" }}>
-                            ({isImproved ? `↓${Math.abs(diff).toFixed(1)}` : (diff < 0 ? `↑${Math.abs(diff).toFixed(1)}` : 'No Change')})
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })()}
-
-                  {/* Confidence Change */}
-                  {(() => {
-                    const c1 = (result.governance_output?.confidence || 0) * 100;
-                    const c2 = (altResult.governance_output?.confidence || 0) * 100;
-                    const diff = c2 - c1;
-                    const isImproved = diff > 0;
-                    return (
-                      <div style={{ background: isImproved ? "#f0fdf4" : (diff < 0 ? "#fef2f2" : "#f8fafc"), padding: "1rem", borderRadius: "8px", border: "1px solid", borderColor: isImproved ? "#bbf7d0" : (diff < 0 ? "#fecaca" : "#e2e8f0"), textAlign: "center" }}>
-                        <span style={{ display: "block", fontSize: "0.85rem", textTransform: "uppercase", fontWeight: "bold", color: isImproved ? "#166534" : (diff < 0 ? "#991b1b" : "#64748b"), marginBottom: "0.5rem" }}>Confidence Change</span>
-                        <div style={{ fontSize: "1.2rem", fontWeight: "bold", color: "#0f172a" }}>
-                          {c1.toFixed(0)}% ➔ {c2.toFixed(0)}% 
-                          <span style={{ color: isImproved ? '#16a34a' : (diff < 0 ? '#dc2626' : '#64748b'), marginLeft: "0.5rem", fontSize: "1rem" }}>
-                            ({isImproved ? `↑${Math.abs(diff).toFixed(0)}%` : (diff < 0 ? `↓${Math.abs(diff).toFixed(0)}%` : 'No Change')})
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })()}
+            
+            <div className="navbar-right">
+              <div className="user-profile-menu" onClick={() => setActiveTab('profile')}>
+                <div className="user-info-text text-right mr-2">
+                  <span className="user-name">{user?.full_name || user?.username}</span>
+                  <span className="user-role">{user?.is_admin ? 'Administrator' : 'User'}</span>
                 </div>
-
-                {(() => {
-                    const r1 = result.risk_output?.score || 0;
-                    const r2 = altResult.risk_output?.score || 0;
-                    const diff = r1 - r2;
-                    if (diff > 0) {
-                      return (
-                        <div style={{ marginTop: "1.5rem", background: "#f0fdfa", padding: "1rem", borderRadius: "8px", borderLeft: "4px solid #0d9488" }}>
-                          <h4 style={{ margin: "0 0 0.5rem 0", color: "#115e59", display: "flex", alignItems: "center", gap: "0.5rem" }}>💡 Why is it safer now?</h4>
-                          <p style={{ margin: 0, fontSize: "0.95rem", color: "#0f766e", lineHeight: "1.5" }}>
-                            The modified scenario significantly reduces the risk profile by removing highly sensitive terminology and narrowing ambiguity. This restricts potential adversarial exploitation, shifting the governance action into a safer threshold zone, making it strictly recommended for use.
-                          </p>
-                        </div>
-                      );
-                    } else if (diff < 0) {
-                       return (
-                        <div style={{ marginTop: "1.5rem", background: "#fef2f2", padding: "1rem", borderRadius: "8px", borderLeft: "4px solid #ef4444" }}>
-                          <h4 style={{ margin: "0 0 0.5rem 0", color: "#991b1b", display: "flex", alignItems: "center", gap: "0.5rem" }}>⚠️ Why is it more dangerous now?</h4>
-                          <p style={{ margin: 0, fontSize: "0.95rem", color: "#7f1d1d", lineHeight: "1.5" }}>
-                            The modified scenario increases the risk profile by introducing sensitive keywords or widening ambiguity. The adversarial exploitability is higher, shifting the governance action into a more restricted threshold zone. The original prompt is safer and recommended.
-                          </p>
-                        </div>
-                      );
-                    }
-                    return null;
-                })()}
+                <div className="user-avatar">
+                  {user?.username?.charAt(0).toUpperCase()}
+                </div>
               </div>
             </div>
-          )}
+          </header>
 
-          {result && altResult && isSimulation && (
-            <div className="simulation-results-container" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", marginTop: "1rem" }}>
-              <div className="sim-column" style={{ background: "#f8fafc", padding: "1.5rem", borderRadius: "12px", border: "2px solid #cbd5e1" }}>
-                <h2 style={{ textAlign: "center", color: "#334155", borderBottom: "2px solid #e2e8f0", paddingBottom: "1rem" }}>A: Original Scenario</h2>
-                <div style={{ fontStyle: "italic", color: "#475569", marginBottom: "1.5rem", padding: "1rem", background: "#f1f5f9", borderRadius: "8px" }}>"{problemDescription}"</div>
-                <AgentResults result={result} />
-              </div>
-              <div className="sim-column" style={{ background: "#f0fdf4", padding: "1.5rem", borderRadius: "12px", border: "2px solid #bbf7d0" }}>
-                <h2 style={{ textAlign: "center", color: "#166534", borderBottom: "2px solid #dcfce7", paddingBottom: "1rem", display: "flex", justifyContent: "center", alignItems: "center", gap: "0.5rem" }}>
-                  B: Modified Scenario <span style={{fontSize: "0.9rem", padding: "0.2rem 0.6rem", background: "#22c55e", color: "white", borderRadius: "20px"}}>What-If</span>
-                </h2>
-                <div style={{ fontStyle: "italic", color: "#15803d", marginBottom: "1.5rem", padding: "1rem", background: "#dcfce7", borderRadius: "8px" }}>"{altDescription}"</div>
-                <AgentResults result={altResult} />
-              </div>
+          {/* Scrollable Content Area */}
+          <main className="main-content custom-scrollbar">
+            <div className="content-container">
+              
+              {sessionWarning && (
+                <div className="session-warning">
+                  <span>⚠️ Your session is about to expire. Please save your work.</span>
+                  <button onClick={logout} className="session-logout-btn">Logout</button>
+                </div>
+              )}
+
+              {activeTab === 'analysis' && (
+                <>
+                  <InputForm
+                    mode={mode}
+                    setMode={handleModeChange}
+                    problemDescription={problemDescription}
+                    setProblemDescription={setProblemDescription}
+                    isSimulation={isSimulation}
+                    setIsSimulation={setIsSimulation}
+                    altDescription={altDescription}
+                    setAltDescription={setAltDescription}
+                    error={error}
+                    setError={setError}
+                    loading={loading}
+                    handleAnalyze={handleAnalyze}
+                    isFormValid={isFormValid}
+                  />
+
+                  {loading && (
+                    <PipelineVisualizer mode={mode} />
+                  )}
+
+                  {result && !isSimulation && (
+                    <>
+                      <AgentResults result={result} />
+                      {result.mode === "governance" && (
+                        <ReportViewer
+                          result={result}
+                          problemDescription={problemDescription}
+                        />
+                      )}
+                    </>
+                  )}
+
+                  {result && altResult && isSimulation && (
+                    <div className="simulation-insights">
+                      <div className="sim-insight-card">
+                        <h2 className="sim-insight-title">
+                          <Activity size={24} className="text-blue-500" /> Decision Comparison Insight
+                        </h2>
+                        
+                        <div className="sim-grid">
+                          {/* Decision Change */}
+                          <div className="sim-box">
+                            <span className="sim-box-label">Decision Change</span>
+                            <div className="sim-box-value">
+                              <span style={{ color: result.governance_output?.decision === 'BLOCK' ? '#ef4444' : '#f8fafc' }}>{result.governance_output?.decision}</span> 
+                              <span className="text-slate-500 mx-2">➔</span> 
+                              <span style={{ color: altResult.governance_output?.decision === 'ALLOW' ? '#10b981' : '#f8fafc' }}>{altResult.governance_output?.decision}</span>
+                            </div>
+                          </div>
+
+                          {/* Risk Change */}
+                          {(() => {
+                            const r1 = result.risk_output?.score || 0;
+                            const r2 = altResult.risk_output?.score || 0;
+                            const diff = r1 - r2;
+                            const isImproved = diff > 0;
+                            const diffColor = isImproved ? "#10b981" : (diff < 0 ? "#ef4444" : "#94a3b8");
+                            return (
+                              <div className="sim-box" style={{ borderColor: isImproved ? "rgba(16, 185, 129, 0.3)" : (diff < 0 ? "rgba(239, 68, 68, 0.3)" : "") }}>
+                                <span className="sim-box-label">Risk Indicator</span>
+                                <div className="sim-box-value">
+                                  {r1} <span className="text-slate-500 mx-2">➔</span> {r2} 
+                                  <span className="sim-box-delta" style={{ color: diffColor }}>
+                                    ({isImproved ? `↓${Math.abs(diff).toFixed(1)}` : (diff < 0 ? `↑${Math.abs(diff).toFixed(1)}` : 'No Change')})
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })()}
+
+                          {/* Confidence Change */}
+                          {(() => {
+                            const c1 = (result.governance_output?.confidence || 0) * 100;
+                            const c2 = (altResult.governance_output?.confidence || 0) * 100;
+                            const diff = c2 - c1;
+                            const isImproved = diff > 0;
+                            const diffColor = isImproved ? "#10b981" : (diff < 0 ? "#ef4444" : "#94a3b8");
+                            return (
+                              <div className="sim-box" style={{ borderColor: isImproved ? "rgba(16, 185, 129, 0.3)" : (diff < 0 ? "rgba(239, 68, 68, 0.3)" : "") }}>
+                                <span className="sim-box-label">Confidence Change</span>
+                                <div className="sim-box-value">
+                                  {c1.toFixed(0)}% <span className="text-slate-500 mx-2">➔</span> {c2.toFixed(0)}% 
+                                  <span className="sim-box-delta" style={{ color: diffColor }}>
+                                    ({isImproved ? `↑${Math.abs(diff).toFixed(0)}%` : (diff < 0 ? `↓${Math.abs(diff).toFixed(0)}%` : 'No Change')})
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* Other Tabs */}
+              {activeTab === 'dashboard' && <Dashboard onClose={() => setActiveTab('analysis')} />}
+              {activeTab === 'history' && <History onClose={() => setActiveTab('analysis')} />}
+              {activeTab === 'policy' && <PolicyBuilder onClose={() => setActiveTab('analysis')} />}
+              {activeTab === 'profile' && <UserProfile onClose={() => setActiveTab('analysis')} />}
+              {activeTab === 'admin' && <AdminDashboard onClose={() => setActiveTab('analysis')} />}
+
             </div>
-          )}
+          </main>
         </div>
       </div>
     </ErrorBoundary>

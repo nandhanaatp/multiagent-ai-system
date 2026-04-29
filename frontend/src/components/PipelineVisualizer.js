@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Zap, Search, Activity, UserCheck, Lock } from 'lucide-react';
+import './PipelineVisualizer.css';
 
 const GOVERNANCE_STAGES = [
   { id: 'analysis', label: 'Semantic Analysis', icon: Search },
@@ -31,30 +32,30 @@ const PipelineVisualizer = ({ mode }) => {
   }, [stages.length]);
 
   return (
-    <div className="w-full max-w-4xl mx-auto my-8 p-8 bg-slate-900 rounded-2xl border border-slate-800 shadow-2xl relative overflow-hidden">
+    <div className="pipeline-container">
       {/* Background Glow */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-purple-600/5 pointer-events-none" />
+      <div className="pipeline-glow-bg" />
       
-      <div className="text-center mb-8">
-        <h3 className="text-xl font-bold text-slate-100 flex items-center justify-center gap-2">
+      <div className="pipeline-header">
+        <h3 className="pipeline-title">
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
           >
-            <Zap className="w-5 h-5 text-blue-400" />
+            <Zap />
           </motion.div>
           Live Agent Orchestration
         </h3>
-        <p className="text-slate-400 text-sm mt-2">
+        <p className="pipeline-subtitle">
           {mode === 'governance' ? 'Analyzing risk vectors...' : 'Synthesizing solution...'}
         </p>
       </div>
 
-      <div className="relative flex justify-between items-center px-4">
+      <div className="pipeline-track-wrapper">
         {/* Connecting Lines */}
-        <div className="absolute left-10 right-10 top-6 h-1 bg-slate-800 -z-10" />
+        <div className="pipeline-bg-line" />
         <div 
-          className="absolute left-10 top-6 h-1 bg-blue-500 -z-10 transition-all duration-1000 ease-in-out"
+          className="pipeline-active-line"
           style={{ width: `calc(${(activeStage / (stages.length - 1)) * 100}% - 20px)` }}
         />
 
@@ -64,7 +65,7 @@ const PipelineVisualizer = ({ mode }) => {
           const Icon = stage.icon;
 
           return (
-            <div key={stage.id} className="flex flex-col items-center relative z-10 w-24">
+            <div key={stage.id} className="pipeline-stage">
               <motion.div
                 initial={false}
                 animate={{
@@ -72,16 +73,19 @@ const PipelineVisualizer = ({ mode }) => {
                   backgroundColor: isPast ? '#3b82f6' : isActive ? '#1e40af' : '#1e293b',
                   borderColor: isActive ? '#60a5fa' : isPast ? '#3b82f6' : '#334155',
                 }}
-                className={`w-12 h-12 rounded-full flex items-center justify-center border-2 shadow-lg mb-3
-                  ${isActive ? 'shadow-blue-500/50' : ''}`}
+                className="pipeline-icon-circle"
+                style={{
+                  boxShadow: isActive ? '0 10px 15px -3px rgba(59, 130, 246, 0.5)' : 'none'
+                }}
               >
                 <Icon 
-                  className={`w-5 h-5 ${isPast || isActive ? 'text-white' : 'text-slate-500'}`} 
+                  style={{ color: isPast || isActive ? '#ffffff' : '#64748b' }}
                 />
               </motion.div>
               
-              <span className={`text-xs font-semibold text-center leading-tight
-                ${isActive ? 'text-blue-400' : isPast ? 'text-slate-300' : 'text-slate-500'}`}
+              <span 
+                className="pipeline-label"
+                style={{ color: isActive ? '#60a5fa' : isPast ? '#cbd5e1' : '#64748b' }}
               >
                 {stage.label}
               </span>
@@ -90,7 +94,7 @@ const PipelineVisualizer = ({ mode }) => {
                 <motion.span
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="absolute -bottom-6 text-[10px] text-blue-400 font-medium whitespace-nowrap bg-blue-900/30 px-2 py-0.5 rounded-full"
+                  className="pipeline-processing-badge"
                 >
                   Processing...
                 </motion.span>

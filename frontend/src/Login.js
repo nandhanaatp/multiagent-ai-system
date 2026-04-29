@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
+import { ShieldCheck, Mail, Lock, AlertTriangle, Eye, EyeOff, Activity, ShieldAlert } from 'lucide-react';
 import './Auth.css';
 
 function Login({ onSwitchToRegister, onSwitchToForgot }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -24,66 +26,126 @@ function Login({ onSwitchToRegister, onSwitchToForgot }) {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <div className="auth-header">
-          <h2>🔐 Login</h2>
-          <p>Welcome back to AI Governance System</p>
-        </div>
-
-        {error && (
-          <div className="error-message">
-            <span className="error-icon">⚠️</span>
-            <span>{error}</span>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <label>Username or Email</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your username or email"
-              required
-              disabled={loading}
-            />
+    <div className="auth-page">
+      
+      {/* Left Side: Form */}
+      <div className="auth-form-side">
+        <div className="auth-form-container">
+          
+          <div className="auth-brand-mobile">
+            <ShieldCheck size={28} /> AI Gov
           </div>
 
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              required
-              disabled={loading}
-            />
+          <div className="auth-header">
+            <h2>Welcome back</h2>
+            <p>Log in to access your AI Governance dashboard.</p>
           </div>
 
-          <button type="submit" className="auth-button" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
+          {error && (
+            <div className="auth-error">
+              <AlertTriangle size={18} />
+              <span>{error}</span>
+            </div>
+          )}
 
-        <div className="auth-footer">
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 10px' }}>
+          <form onSubmit={handleSubmit} className="auth-form">
+            <div className="auth-input-group">
+              <label className="auth-label">Username or Email</label>
+              <div className="auth-input-wrapper">
+                <Mail className="auth-icon" />
+                <input
+                  type="text"
+                  className="auth-input"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter your username or email"
+                  required
+                  disabled={loading}
+                />
+              </div>
+            </div>
+
+            <div className="auth-input-group">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="auth-label">Password</label>
+                <button type="button" onClick={onSwitchToForgot} className="auth-forgot-link" tabIndex="-1">
+                  Forgot password?
+                </button>
+              </div>
+              <div className="auth-input-wrapper">
+                <Lock className="auth-icon" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className="auth-input"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  required
+                  disabled={loading}
+                />
+                <button 
+                  type="button" 
+                  className="password-toggle" 
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex="-1"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" className="auth-submit-btn" disabled={loading}>
+              {loading ? (
+                <>
+                  <div className="spinner" style={{ width: '20px', height: '20px', margin: 0, borderWidth: '2px' }}></div>
+                  Authenticating...
+                </>
+              ) : (
+                'Sign In'
+              )}
+            </button>
+          </form>
+
+          <div className="auth-footer">
             <p>
               Don't have an account?{' '}
-              <button onClick={onSwitchToRegister} className="link-button">
-                Register here
-              </button>
-            </p>
-            <p>
-              <button onClick={onSwitchToForgot} className="link-button" style={{color: '#6b7280'}}>
-                Forgot Password?
+              <button onClick={onSwitchToRegister} className="auth-link">
+                Create one now
               </button>
             </p>
           </div>
         </div>
       </div>
+
+      {/* Right Side: Visual / Brand */}
+      <div className="auth-visual-side">
+        <div className="visual-bg-glow"></div>
+        <div className="visual-bg-glow-2"></div>
+        
+        <div className="visual-brand">
+          <ShieldCheck size={32} /> Explainable AI Governance
+        </div>
+
+        <div className="visual-content">
+          <h1>Enterprise-Grade Agent Security.</h1>
+          <p>
+            Deploy and orchestrate autonomous AI agents with total confidence. 
+            Our platform provides real-time risk assessment, adversarial defense, and policy-driven governance.
+          </p>
+
+          <div className="visual-features">
+            <div className="visual-feature-item">
+              <div className="feature-icon-wrapper"><Activity size={20} /></div>
+              <span className="feature-text">Real-time Risk Telemetry</span>
+            </div>
+            <div className="visual-feature-item">
+              <div className="feature-icon-wrapper"><ShieldAlert size={20} /></div>
+              <span className="feature-text">Adversarial Threat Defense</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }
