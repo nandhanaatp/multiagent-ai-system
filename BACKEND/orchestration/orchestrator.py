@@ -160,7 +160,8 @@ class Orchestrator:
                 "execution_output": None,
                 "validation_output": None,
                 "final_decision": final_decision,
-                "explanation": explanation_text
+                "explanation": explanation_text,
+                "suggested_prompt": explanation_output.get("safer_alternatives") if final_decision in ["BLOCK", "REVIEW"] else None
             }
 
         except Exception as e:

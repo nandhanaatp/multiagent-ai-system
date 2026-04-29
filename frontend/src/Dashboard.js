@@ -1,87 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { getToken } from './AuthContext';
-import './Dashboard.css';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { Activity, ShieldCheck, Zap, AlertTriangle, XCircle, Search, Target, Users } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000';
 
-function DonutChart({ data }) {
-  const total = data.BLOCK + data.REVIEW + data.ALLOW;
-  if (total === 0) return <div className="chart-empty">No data yet</div>;
+const COLORS = {
+  BLOCK: '#ef4444',
+  REVIEW: '#f59e0b',
+  ALLOW: '#10b981',
+  APPROVED: '#10b981',
+  NEEDS_IMPROVEMENT: '#f59e0b',
+  REJECTED: '#ef4444'
+};
 
-  const colors = { BLOCK: '#dc2626', REVIEW: '#f59e0b', ALLOW: '#16a34a' };
-  let offset = 0;
-  const radius = 60, cx = 80, cy = 80, stroke = 28;
-  const circumference = 2 * Math.PI * radius;
-
-  const segments = Object.entries(data).map(([key, val]) => {
-    const pct = val / total;
-    const dash = pct * circumference;
-    const seg = { key, val, pct, dash, offset, color: colors[key] };
-    offset += dash;
-    return seg;
-  });
-
-  return (
-    <svg viewBox="0 0 160 160" className="donut-svg">
-      {segments.map(s => (
-        <circle key={s.key}
-          cx={cx} cy={cy} r={radius}
-          fill="none"
-          stroke={s.color}
-          strokeWidth={stroke}
-          strokeDasharray={`${s.dash} ${circumference - s.dash}`}
-          strokeDashoffset={-s.offset}
-          transform={`rotate(-90 ${cx} ${cy})`}
-        />
-      ))}
-      <text x={cx} y={cy - 8} textAnchor="middle" className="donut-total">{total}</text>
-      <text x={cx} y={cy + 12} textAnchor="middle" className="donut-label">Total</text>
-    </svg>
-  );
-}
-
-function TrendChart({ trend }) {
-  if (!trend || trend.length === 0) return <div className="chart-empty">No trend data yet</div>;
-
-  const max = Math.max(...trend.map(t => t.count), 1);
-  const W = 400, H = 120, pad = 30;
-  const xStep = trend.length > 1 ? (W - pad * 2) / (trend.length - 1) : W - pad * 2;
-
-  const points = trend.map((t, i) => ({
-    x: pad + i * xStep,
-    y: H - pad - ((t.count / max) * (H - pad * 2)),
-    ...t
-  }));
-
-  const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
-  const areaD = `${pathD} L${points[points.length - 1].x},${H - pad} L${points[0].x},${H - pad} Z`;
-
-  return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="trend-svg">
-      <defs>
-        <linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <path d={areaD} fill="url(#trendGrad)" />
-      <path d={pathD} fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-      {points.map((p, i) => (
-        <g key={i}>
-          <circle cx={p.x} cy={p.y} r="4" fill="#3b82f6" />
-          <text x={p.x} y={H - 8} textAnchor="middle" className="trend-date">
-            {p.date.slice(5)}
-          </text>
-        </g>
-      ))}
-    </svg>
-  );
-}
+const StatCard = ({ icon: Icon, value, label, color, delay }) => (
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay }}
+    className="bg-slate-800/80 border border-slate-700 p-5 rounded-2xl flex items-center gap-4"
+  >
+    <div className="p-3 rounded-xl" style={{ backgroundColor: `${color}20`, color }}>
+      <Icon size={24} />
+    </div>
+    <div>
+      <div className="text-2xl font-bold text-slate-100">{value}</div>
+      <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{label}</div>
+    </div>
+  </motion.div>
+);
 
 function Dashboard({ onClose }) {
-  const [data, setData]     = useState(null);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError]   = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetch(`${API_URL}/analytics`, { headers: { 'Authorization': `Bearer ${getToken()}` } })
@@ -91,120 +43,109 @@ function Dashboard({ onClose }) {
   }, []);
 
   const decisions = data?.decisions || { BLOCK: 0, REVIEW: 0, ALLOW: 0, APPROVED: 0, NEEDS_IMPROVEMENT: 0, REJECTED: 0 };
-  const governanceTotal     = decisions.BLOCK + decisions.REVIEW + decisions.ALLOW;
-  const problemSolvingTotal = decisions.APPROVED + decisions.NEEDS_IMPROVEMENT + decisions.REJECTED;
-  const total     = data?.total_analyses || 0;
-  const avgRisk   = data?.avg_risk_score || 0;
-  const trend     = data?.trend || [];
+  const total = data?.total_analyses || 0;
+  const avgRisk = data?.avg_risk_score || 0;
+  const trend = data?.trend || [];
 
-  const riskColor = avgRisk >= 60 ? '#dc2626' : avgRisk >= 30 ? '#f59e0b' : '#16a34a';
+  const govData = [
+    { name: 'ALLOW', value: decisions.ALLOW },
+    { name: 'REVIEW', value: decisions.REVIEW },
+    { name: 'BLOCK', value: decisions.BLOCK }
+  ];
+
+  const psData = [
+    { name: 'APPROVED', value: decisions.APPROVED },
+    { name: 'NEEDS_IMPROVEMENT', value: decisions.NEEDS_IMPROVEMENT },
+    { name: 'REJECTED', value: decisions.REJECTED }
+  ];
 
   return (
-    <div className="dash-overlay">
-      <div className="dash-panel">
-        <div className="dash-header">
-          <h2>📊 Analytics Dashboard</h2>
-          <button className="dash-close" onClick={onClose}>✕</button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm overflow-y-auto">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+        className="bg-slate-900 border border-slate-700 w-full max-w-6xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+      >
+        <div className="flex justify-between items-center p-6 border-b border-slate-800 bg-slate-800/50">
+          <div className="flex items-center gap-3">
+            <Activity className="text-blue-400" size={24} />
+            <h2 className="text-xl font-bold text-slate-100">Analytics Dashboard</h2>
+          </div>
+          <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-slate-800">
+            ✕
+          </button>
         </div>
 
-        {loading && <div className="dash-loading"><div className="spinner"></div><p>Loading analytics...</p></div>}
-        {error   && <div className="dash-error">⚠️ {error}</div>}
-
-        {!loading && !error && (
-          <div className="dash-body">
-
-            {/* Stat Cards */}
-            <div className="dash-stats">
-              <div className="stat-card">
-                <div className="stat-icon">🔍</div>
-                <div className="stat-value">{total}</div>
-                <div className="stat-label">Total Analyses</div>
-              </div>
-              <div className="stat-card" style={{ borderColor: '#dc2626' }}>
-                <div className="stat-icon">🚫</div>
-                <div className="stat-value" style={{ color: '#dc2626' }}>{decisions.BLOCK}</div>
-                <div className="stat-label">Blocked</div>
-              </div>
-              <div className="stat-card" style={{ borderColor: '#f59e0b' }}>
-                <div className="stat-icon">⚠️</div>
-                <div className="stat-value" style={{ color: '#f59e0b' }}>{decisions.REVIEW}</div>
-                <div className="stat-label">Reviews</div>
-              </div>
-              <div className="stat-card" style={{ borderColor: '#16a34a' }}>
-                <div className="stat-icon">✅</div>
-                <div className="stat-value" style={{ color: '#16a34a' }}>{decisions.ALLOW}</div>
-                <div className="stat-label">Allowed</div>
-              </div>
-              <div className="stat-card" style={{ borderColor: '#16a34a' }}>
-                <div className="stat-icon">✅</div>
-                <div className="stat-value" style={{ color: '#16a34a' }}>{decisions.APPROVED}</div>
-                <div className="stat-label">Approved</div>
-              </div>
-              <div className="stat-card" style={{ borderColor: '#f59e0b' }}>
-                <div className="stat-icon">🔧</div>
-                <div className="stat-value" style={{ color: '#f59e0b' }}>{decisions.NEEDS_IMPROVEMENT}</div>
-                <div className="stat-label">Needs Work</div>
-              </div>
-              <div className="stat-card" style={{ borderColor: '#dc2626' }}>
-                <div className="stat-icon">🚫</div>
-                <div className="stat-value" style={{ color: '#dc2626' }}>{decisions.REJECTED}</div>
-                <div className="stat-label">Rejected</div>
-              </div>
-              <div className="stat-card" style={{ borderColor: riskColor }}>
-                <div className="stat-icon">⚡</div>
-                <div className="stat-value" style={{ color: riskColor }}>{avgRisk}</div>
-                <div className="stat-label">Avg Risk Score</div>
-              </div>
+        <div className="p-6 overflow-y-auto custom-scrollbar">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+              <Zap className="w-10 h-10 animate-pulse text-blue-500 mb-4" />
+              <p>Aggregating telemetry...</p>
             </div>
+          ) : error ? (
+            <div className="p-4 bg-red-900/30 text-red-400 rounded-xl border border-red-900/50 flex items-center gap-3">
+              <AlertTriangle /> {error}
+            </div>
+          ) : (
+            <div className="space-y-6">
+              
+              {/* Stats Row */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <StatCard icon={Search} value={total} label="Total Scans" color="#3b82f6" delay={0.1} />
+                <StatCard icon={Target} value={avgRisk.toFixed(1)} label="Avg Risk Score" color={avgRisk > 60 ? '#ef4444' : avgRisk > 30 ? '#f59e0b' : '#10b981'} delay={0.2} />
+                <StatCard icon={ShieldCheck} value={decisions.ALLOW} label="Allowed" color="#10b981" delay={0.3} />
+                <StatCard icon={XCircle} value={decisions.BLOCK} label="Blocked" color="#ef4444" delay={0.4} />
+              </div>
 
-            {/* Donut Charts */}
-            <div className="dash-section">
-              <h3>Decision Breakdown</h3>
-              <div className="donut-row">
-                <div className="donut-block">
-                  <div className="donut-mode-label">🛡️ Governance</div>
-                  <div className="donut-container">
-                    <DonutChart data={{ BLOCK: decisions.BLOCK, REVIEW: decisions.REVIEW, ALLOW: decisions.ALLOW }} />
-                    <div className="donut-legend">
-                      {[['BLOCK','#dc2626'], ['REVIEW','#f59e0b'], ['ALLOW','#16a34a']].map(([k, c]) => (
-                        <div key={k} className="legend-item">
-                          <span className="legend-dot" style={{ background: c }}></span>
-                          <span className="legend-label">{k}</span>
-                          <span className="legend-count">{decisions[k]}</span>
-                          <span className="legend-pct">{governanceTotal > 0 ? Math.round((decisions[k] / governanceTotal) * 100) : 0}%</span>
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Decision Breakdown */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="bg-slate-800/50 border border-slate-700 p-6 rounded-2xl">
+                  <h3 className="text-lg font-bold text-slate-200 mb-6 flex items-center gap-2"><PieChart size={18}/> Decision Distribution</h3>
+                  <div className="flex h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie data={govData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                          {govData.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[entry.name]} />)}
+                        </Pie>
+                        <Tooltip contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', borderRadius: '8px', color: '#f8fafc' }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="flex flex-col justify-center gap-4 w-1/3">
+                      {govData.map(d => (
+                        <div key={d.name} className="flex items-center gap-2 text-sm text-slate-300">
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[d.name] }} />
+                          {d.name} ({d.value})
                         </div>
                       ))}
                     </div>
                   </div>
-                </div>
-                <div className="donut-block">
-                  <div className="donut-mode-label">🤖 Problem Solving</div>
-                  <div className="donut-container">
-                    <DonutChart data={{ APPROVED: decisions.APPROVED, NEEDS_IMPROVEMENT: decisions.NEEDS_IMPROVEMENT, REJECTED: decisions.REJECTED }} />
-                    <div className="donut-legend">
-                      {[['APPROVED','#16a34a'], ['NEEDS_IMPROVEMENT','#f59e0b'], ['REJECTED','#dc2626']].map(([k, c]) => (
-                        <div key={k} className="legend-item">
-                          <span className="legend-dot" style={{ background: c }}></span>
-                          <span className="legend-label">{k}</span>
-                          <span className="legend-count">{decisions[k]}</span>
-                          <span className="legend-pct">{problemSolvingTotal > 0 ? Math.round((decisions[k] / problemSolvingTotal) * 100) : 0}%</span>
-                        </div>
-                      ))}
-                    </div>
+                </motion.div>
+
+                {/* Trend Chart */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="bg-slate-800/50 border border-slate-700 p-6 rounded-2xl">
+                  <h3 className="text-lg font-bold text-slate-200 mb-6 flex items-center gap-2"><Activity size={18}/> Analysis Trend (7 Days)</h3>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={trend}>
+                        <defs>
+                          <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <XAxis dataKey="date" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} tickFormatter={str => str.substring(5)} />
+                        <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+                        <Tooltip contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', borderRadius: '8px', color: '#f8fafc' }} />
+                        <Area type="monotone" dataKey="count" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorCount)" />
+                      </AreaChart>
+                    </ResponsiveContainer>
                   </div>
-                </div>
+                </motion.div>
               </div>
-            </div>
 
-            {/* Trend Chart */}
-            <div className="dash-section">
-              <h3>Analysis Trend</h3>
-              <TrendChart trend={trend} />
             </div>
-
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      </motion.div>
     </div>
   );
 }

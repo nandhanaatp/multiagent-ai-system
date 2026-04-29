@@ -1,7 +1,7 @@
 import re
 from datetime import datetime
 from pydantic import BaseModel, Field, field_validator, EmailStr, ConfigDict
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Any, Union
 
 # Characters not allowed in problem description
 DANGEROUS_PATTERN = re.compile(r'[<>{}\[\]`]')
@@ -43,7 +43,7 @@ class AgentOutput(BaseModel):
     agent: str
     score: float
     confidence: Optional[float] = None
-    feature_breakdown: Optional[Dict[str, float]] = None
+    feature_breakdown: Optional[Dict[str, Any]] = None
     decision: Optional[str] = None
     reason: str
 
@@ -81,14 +81,22 @@ class ExplanationOutput(AgentOutput):
     summary: str
     detailed_reasoning: str
     policy_justification: str
-    real_world_consequences: str
-    mitigation_strategies: str
+    real_world_consequences: Union[str, List[str]]
+    mitigation_strategies: Union[str, List[str]]
+
+    @field_validator('real_world_consequences', 'mitigation_strategies', mode='before')
+    @classmethod
+    def convert_list_to_str(cls, v: Union[str, List[str]]) -> str:
+        if isinstance(v, list):
+            return " ".join(str(item) for item in v)
+        return str(v)
 
 class AnalyzeResponse(BaseModel):
     mode: str
     final_decision: str
     explanation: str
     query_id: int
+    suggested_prompt: Optional[str] = None
     # Governance mode outputs
     analysis_output: Optional[AgentOutput] = None
     risk_output: Optional[AgentOutput] = None

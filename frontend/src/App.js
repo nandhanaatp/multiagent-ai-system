@@ -8,17 +8,21 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import InputForm from "./components/InputForm";
 import AgentResults from "./components/AgentResults";
 import ReportViewer from "./components/ReportViewer";
+import PipelineVisualizer from "./components/PipelineVisualizer";
 import ForgotPassword from "./ForgotPassword";
 import ResetPassword from "./ResetPassword";
 import PolicyBuilder from "./PolicyBuilder";
 import UserProfile from "./UserProfile";
 import AdminDashboard from "./AdminDashboard";
+import LandingPage from "./LandingPage";
+import { Toaster } from "react-hot-toast";
 import "./App.css";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
 
 function App() {
   const { user, logout, isAuthenticated, loading: authLoading, sessionWarning } = useAuth();
+  const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetToken, setResetToken] = useState(null);
@@ -69,15 +73,28 @@ function App() {
       return <ResetPassword token={resetToken} onBackToLogin={() => setResetToken(null)} />;
     }
     if (showForgotPassword) {
-      return <ForgotPassword onBackToLogin={() => setShowForgotPassword(false)} />;
+      return <ForgotPassword onBackToLogin={() => { setShowForgotPassword(false); setShowLogin(true); }} />;
     }
     if (showRegister) {
-      return <Register onSwitchToLogin={() => setShowRegister(false)} />;
+      return <Register onSwitchToLogin={() => { setShowRegister(false); setShowLogin(true); }} />;
     }
-    return <Login 
-      onSwitchToRegister={() => setShowRegister(true)} 
-      onSwitchToForgot={() => setShowForgotPassword(true)}
-    />;
+    if (showLogin) {
+      return (
+        <div style={{ position: "relative" }}>
+          <button 
+            onClick={() => setShowLogin(false)} 
+            style={{ position: "absolute", top: "20px", left: "20px", zIndex: 100, padding: "8px 16px", background: "rgba(255,255,255,0.1)", color: "white", border: "none", borderRadius: "8px", cursor: "pointer" }}
+          >
+            ← Back to Home
+          </button>
+          <Login 
+            onSwitchToRegister={() => { setShowLogin(false); setShowRegister(true); }} 
+            onSwitchToForgot={() => { setShowLogin(false); setShowForgotPassword(true); }}
+          />
+        </div>
+      );
+    }
+    return <LandingPage onLogin={() => setShowLogin(true)} onRegister={() => setShowRegister(true)} />;
   }
 
   const performAnalysis = async (text) => {
@@ -146,6 +163,7 @@ function App() {
 
   return (
     <ErrorBoundary>
+      <Toaster position="top-right" toastOptions={{ style: { background: '#1e293b', color: '#f8fafc' } }} />
       <div className="app">
         <header className="header">
           <div className="header-content">
@@ -209,10 +227,7 @@ function App() {
           />
 
           {loading && (
-            <div className="loading-section">
-              <div className="spinner"></div>
-              <p>{isSimulation ? "AI agents are running parallel simulations..." : "AI agents are analyzing your request..."}</p>
-            </div>
+            <PipelineVisualizer mode={mode} />
           )}
 
           {result && !isSimulation && (

@@ -66,8 +66,8 @@ class GovernanceAgent(BaseAgent):
             "score": score,
             "confidence": 0.95,
             "feature_breakdown": {
-                "Risk Level": risk_level,
-                "Policy Source": "override" if risk_level in policy_overrides else "default"
+                "Risk Score Impact": score,
+                "Policy Override Applied": 1.0 if risk_level in policy_overrides else 0.0
             },
             "decision": decision,
             "reason": reason,
