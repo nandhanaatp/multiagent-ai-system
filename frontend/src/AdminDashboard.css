@@ -57,15 +57,15 @@
 .admin-stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  gap: 2.5rem;
+  margin-bottom: 3rem;
 }
 
 .admin-stat-card {
   background: linear-gradient(145deg, #1e293b, #334155);
   border: 1px solid #475569;
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 2.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -75,14 +75,14 @@
 }
 
 .stat-value {
-  font-size: 2.5rem;
+  font-size: 3rem;
   font-weight: 800;
   color: #38bdf8;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 .stat-label {
-  font-size: 1rem;
+  font-size: 1.15rem;
   font-weight: 600;
   color: #f1f5f9;
   text-transform: uppercase;

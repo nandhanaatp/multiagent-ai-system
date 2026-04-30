@@ -92,16 +92,17 @@
 
 .problem-input {
   width: 100%;
-  padding: 1rem;
+  padding: 1.5rem;
   background-color: var(--bg-input);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   color: var(--text-primary);
-  font-size: 1rem;
+  font-size: 1.15rem;
   font-family: inherit;
   transition: all 0.2s ease;
   resize: vertical;
-  min-height: 120px;
+  min-height: 150px;
+  line-height: 1.7;
 }
 
 .problem-input:focus {

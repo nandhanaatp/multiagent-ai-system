@@ -345,7 +345,7 @@ function App() {
                       </div>
 
                       {/* Side-by-Side Explanations */}
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginTop: '2rem' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', marginTop: '3rem' }}>
                         <div>
                           <h3 style={{ color: 'var(--text-secondary)', marginBottom: '1rem', borderBottom: '1px solid var(--border-default)', paddingBottom: '0.5rem' }}>Original Scenario Analysis</h3>
                           <AgentResults result={result} isCompact={true} />

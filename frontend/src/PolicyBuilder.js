@@ -123,9 +123,9 @@ function PolicyBuilder() {
         )}
 
         {!loading && policies && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '3rem' }}>
             {LEVELS.map((level) => (
-              <div key={level} style={{ background: 'var(--bg-panel)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-lg)', padding: '1.5rem', transition: 'transform 0.2s', borderTop: `4px solid ${getLevelColor(level)}` }}>
+              <div key={level} style={{ background: 'var(--bg-panel)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-xl)', padding: '2.5rem', transition: 'transform 0.2s', borderTop: `4px solid ${getLevelColor(level)}` }}>
                 
                 <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: 0, marginBottom: '1.5rem', color: 'var(--text-primary)', fontSize: '1.25rem' }}>
                   {level === 'HIGH' && <ShieldAlert color={getLevelColor(level)} size={20} />}
