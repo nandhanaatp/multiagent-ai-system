@@ -317,3 +317,159 @@
   font-weight: 600;
   color: var(--text-primary);
 }
+
+/* -------------------------------------
+   Visual Mockup (SaaS Dashboard preview)
+   ------------------------------------- */
+
+.visual-mockup-container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 550px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1000px;
+  flex: 1;
+}
+
+.mockup-workflow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 2rem;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+.workflow-node {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f1f5f9;
+}
+
+.workflow-node.user-node {
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #93c5fd;
+}
+
+.workflow-node.agent-node {
+  border-color: rgba(139, 92, 246, 0.3);
+  color: #c4b5fd;
+}
+
+.workflow-node.decision-node.allow {
+  background: rgba(6, 78, 59, 0.4);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #6ee7b7;
+  animation: pulseGlow 4s infinite;
+}
+
+.workflow-line {
+  height: 40px;
+  width: 2px;
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 50%, transparent 50%);
+  background-size: 2px 8px;
+  background-repeat: repeat-y;
+  margin: 0.25rem 0;
+}
+
+.mockup-floating-card {
+  position: absolute;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+  z-index: 20;
+}
+
+.mockup-floating-card.top-right {
+  top: 10%;
+  right: -5%;
+  animation: floatSlow 7s ease-in-out infinite reverse;
+}
+
+.mockup-floating-card.bottom-left {
+  bottom: 10%;
+  left: -5%;
+  animation: floatSlow 5s ease-in-out infinite 1s;
+}
+
+.card-header {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #94a3b8;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.card-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: white;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #cbd5e1;
+}
+
+.card-badge.secure {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.threat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  color: #e2e8f0;
+}
+
+.threat-item:last-child {
+  margin-bottom: 0;
+}
+
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(1deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(16, 185, 129, 0.1); }
+  50% { box-shadow: 0 0 25px rgba(16, 185, 129, 0.4); }
+}

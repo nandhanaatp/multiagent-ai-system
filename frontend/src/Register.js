@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Mail, Lock, User, AlertTriangle, Eye, EyeOff, CheckCircle } from 'lucide-react';
+import { ShieldCheck, Mail, Lock, User, AlertTriangle, Eye, EyeOff, CheckCircle, Activity, ShieldAlert, BrainCircuit, CheckCircle2 } from 'lucide-react';
 import './Auth.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000';
@@ -162,6 +162,43 @@ function Register({ onSwitchToLogin }) {
         
         <div className="visual-brand">
           <ShieldCheck size={32} /> Explainable AI Governance
+        </div>
+
+        <div className="visual-mockup-container">
+          <div className="mockup-workflow">
+            <div className="workflow-node user-node">User Prompt</div>
+            <div className="workflow-line"></div>
+            <div className="workflow-node agent-node">
+              <BrainCircuit size={20} />
+              Risk Analysis Agent
+            </div>
+            <div className="workflow-line"></div>
+            <div className="workflow-node decision-node allow">
+              <CheckCircle2 size={20} />
+              Policy Approved
+            </div>
+          </div>
+
+          <div className="mockup-floating-card top-right">
+            <div className="card-header">Live Telemetry</div>
+            <div className="card-stat">
+              <span className="stat-value">12%</span>
+              <span className="stat-label">Risk Score</span>
+            </div>
+            <div className="card-badge secure">Secure</div>
+          </div>
+          
+          <div className="mockup-floating-card bottom-left">
+            <div className="card-header">Threat Defense</div>
+            <div className="threat-item">
+              <ShieldAlert size={16} color="#f59e0b" />
+              <span>Jailbreak Attempt Blocked</span>
+            </div>
+            <div className="threat-item">
+              <Activity size={16} color="#10b981" />
+              <span>Normal Traffic</span>
+            </div>
+          </div>
         </div>
 
         <div className="visual-content">
