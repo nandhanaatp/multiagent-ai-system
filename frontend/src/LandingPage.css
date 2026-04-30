@@ -6,6 +6,8 @@
   color: var(--text-primary);
   overflow-x: hidden;
   font-family: var(--font-family);
+  display: flex;
+  flex-direction: column;
 }
 
 .landing-nav {
@@ -110,11 +112,16 @@
 
 /* Hero Section */
 .landing-hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   position: relative;
   z-index: 10;
   max-width: 1600px;
+  width: 100%;
   margin: 0 auto;
-  padding: 6rem 2rem 5rem;
+  padding: 4rem 2rem;
   text-align: center;
 }
 
@@ -123,11 +130,11 @@
   top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 600px;
-  height: 600px;
-  background-color: rgba(37, 99, 235, 0.15);
+  width: 1000px;
+  height: 1000px;
+  background-color: rgba(59, 130, 246, 0.12);
   border-radius: 50%;
-  filter: blur(120px);
+  filter: blur(150px);
   z-index: -1;
   pointer-events: none;
 }
