@@ -52,7 +52,16 @@
 }
 
 @media (min-width: 1280px) {
-  .agent-grid { grid-template-columns: repeat(4, 1fr); }
+  .agent-grid:not(.compact) { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Compact Mode (for side-by-side simulation) */
+.agent-grid.compact {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1400px) {
+  .agent-grid.compact { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* Base Card Styling */

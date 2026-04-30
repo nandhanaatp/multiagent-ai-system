@@ -6,7 +6,8 @@
   border: 1px solid var(--border-light);
   border-radius: var(--radius-xl);
   padding: 2rem;
-  margin-bottom: 2rem;
+  margin: 0 auto 2rem auto;
+  max-width: 1000px;
   box-shadow: var(--shadow-md);
   animation: fadeIn 0.4s ease-out;
 }

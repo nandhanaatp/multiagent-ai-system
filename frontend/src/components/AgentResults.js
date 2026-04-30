@@ -114,7 +114,7 @@ const FeatureBreakdown = ({ breakdown }) => {
   );
 };
 
-function AgentResults({ result }) {
+function AgentResults({ result, isCompact }) {
   const isGovernance = result.mode === "governance";
 
   return (
@@ -127,7 +127,7 @@ function AgentResults({ result }) {
         <p className="agent-results-subtitle">Multi-Agent reasoning traces and outputs</p>
       </div>
 
-      <div className="agent-grid">
+      <div className={`agent-grid ${isCompact ? 'compact' : ''}`}>
         {isGovernance ? (
           <>
             {/* Analysis Agent */}
