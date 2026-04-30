@@ -180,11 +180,19 @@
   overflow-y: auto;
   padding: 24px 32px;
   position: relative;
+  background: radial-gradient(circle at top, rgba(30, 41, 59, 0.4) 0%, transparent 60%);
+}
+
+.main-content.centered-state {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .content-container {
-  max-width: none;
+  max-width: 1800px;
   width: 100%;
+  margin: 0 auto;
 }
 
 /* Mobile Adjustments */

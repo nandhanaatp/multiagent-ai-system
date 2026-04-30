@@ -240,7 +240,7 @@ function App() {
           </header>
 
           {/* Scrollable Content Area */}
-          <main className="main-content custom-scrollbar">
+          <main className={`main-content custom-scrollbar ${activeTab === 'analysis' && !result && !loading ? 'centered-state' : ''}`}>
             <div className="content-container">
               
               {sessionWarning && (

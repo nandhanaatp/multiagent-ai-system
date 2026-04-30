@@ -293,7 +293,7 @@
 }
 
 .visual-content h1 {
-  font-size: clamp(3rem, 5vw, 6rem);
+  font-size: clamp(3rem, 6vw, 10rem);
   font-weight: 900;
   line-height: 1.1;
   letter-spacing: -0.03em;
@@ -302,7 +302,7 @@
 }
 
 .visual-content p {
-  font-size: clamp(1.125rem, 1.5vw, 1.75rem);
+  font-size: clamp(1.125rem, 2vw, 2.5rem);
   color: var(--text-secondary);
   line-height: 1.6;
   margin-bottom: 2rem;
@@ -368,7 +368,17 @@
   backdrop-filter: blur(12px);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   animation: floatSlow 6s ease-in-out infinite;
-  transform: scale(clamp(1, 1vw, 1.5));
+}
+
+@media (min-width: 1600px) {
+  .mockup-workflow {
+    transform: scale(1.5);
+  }
+}
+@media (min-width: 2500px) {
+  .mockup-workflow {
+    transform: scale(2.5);
+  }
 }
 
 .workflow-node {
@@ -419,7 +429,17 @@
   padding: clamp(1.25rem, 2vw, 2.5rem);
   box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
   z-index: 20;
-  transform: scale(clamp(1, 1vw, 1.5));
+}
+
+@media (min-width: 1600px) {
+  .mockup-floating-card {
+    transform: scale(1.5);
+  }
+}
+@media (min-width: 2500px) {
+  .mockup-floating-card {
+    transform: scale(2.5);
+  }
 }
 
 .mockup-floating-card.top-right {
