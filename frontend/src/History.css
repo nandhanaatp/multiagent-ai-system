@@ -99,8 +99,8 @@
 }
 
 .history-table th {
-  padding: 1rem 1.5rem;
-  font-size: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -110,9 +110,9 @@
 }
 
 .history-table td {
-  padding: 1.25rem 1.5rem;
+  padding: 1.5rem 1.5rem;
   border-bottom: 1px solid var(--border-light);
-  font-size: 0.875rem;
+  font-size: 1.05rem;
   color: var(--text-secondary);
 }
 
