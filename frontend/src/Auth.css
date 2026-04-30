@@ -23,13 +23,13 @@
 
 .auth-form-container {
   width: 100%;
-  max-width: 500px;
+  max-width: 80%;
   animation: fadeIn 0.6s ease-out;
 }
 
 @media (min-width: 1600px) {
   .auth-form-container {
-    max-width: 650px;
+    max-width: 80%;
   }
   .auth-header h2 {
     font-size: 2.75rem;
@@ -289,7 +289,8 @@
 .visual-content {
   position: relative;
   z-index: 10;
-  max-width: 480px;
+  max-width: none;
+  width: 100%;
 }
 
 .visual-content h1 {

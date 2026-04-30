@@ -125,7 +125,7 @@
 }
 
 .query-cell {
-  max-width: 300px;
+  max-width: none;
 }
 
 .query-text-truncate {

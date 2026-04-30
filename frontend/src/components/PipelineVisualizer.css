@@ -1,6 +1,6 @@
 .pipeline-container {
   width: 100%;
-  max-width: 56rem;
+  max-width: none;
   margin: 2rem auto;
   padding: 2rem;
   background-color: var(--bg-tertiary);

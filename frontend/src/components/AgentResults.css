@@ -43,16 +43,15 @@
 /* Grid Layout */
 .agent-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.5rem;
-}
-
-@media (min-width: 768px) {
-  .agent-grid { grid-template-columns: repeat(2, 1fr); }
+  width: 100%;
 }
 
 @media (min-width: 1280px) {
-  .agent-grid:not(.compact) { grid-template-columns: repeat(4, 1fr); }
+  .agent-grid:not(.compact) { 
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+  }
 }
 
 /* Compact Mode (for side-by-side simulation) */
