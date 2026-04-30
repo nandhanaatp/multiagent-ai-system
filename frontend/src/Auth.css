@@ -23,8 +23,30 @@
 
 .auth-form-container {
   width: 100%;
-  max-width: 400px;
+  max-width: 500px;
   animation: fadeIn 0.6s ease-out;
+}
+
+@media (min-width: 1600px) {
+  .auth-form-container {
+    max-width: 650px;
+  }
+  .auth-header h2 {
+    font-size: 2.75rem;
+  }
+  .auth-input {
+    font-size: 1.1rem;
+    padding: 1rem 1rem 1rem 3.5rem;
+  }
+  .auth-submit-btn {
+    font-size: 1.125rem;
+    padding: 1.25rem;
+  }
+  .auth-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    left: 1.25rem;
+  }
 }
 
 @keyframes fadeIn {
@@ -231,8 +253,8 @@
   position: absolute;
   top: -10%;
   right: -10%;
-  width: 600px;
-  height: 600px;
+  width: clamp(600px, 60vw, 1200px);
+  height: clamp(600px, 60vh, 1200px);
   background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(15, 23, 42, 0) 70%);
   border-radius: 50%;
   z-index: 0;
@@ -242,8 +264,8 @@
   position: absolute;
   bottom: -10%;
   left: -10%;
-  width: 500px;
-  height: 500px;
+  width: clamp(500px, 50vw, 1000px);
+  height: clamp(500px, 50vh, 1000px);
   background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, rgba(15, 23, 42, 0) 70%);
   border-radius: 50%;
   z-index: 0;
@@ -271,7 +293,7 @@
 }
 
 .visual-content h1 {
-  font-size: 3rem;
+  font-size: clamp(3rem, 5vw, 6rem);
   font-weight: 900;
   line-height: 1.1;
   letter-spacing: -0.03em;
@@ -280,7 +302,7 @@
 }
 
 .visual-content p {
-  font-size: 1.125rem;
+  font-size: clamp(1.125rem, 1.5vw, 1.75rem);
   color: var(--text-secondary);
   line-height: 1.6;
   margin-bottom: 2rem;
@@ -326,7 +348,7 @@
   position: relative;
   z-index: 10;
   width: 100%;
-  max-width: 550px;
+  max-width: none;
   margin: 0 auto;
   display: flex;
   justify-content: center;
@@ -342,10 +364,11 @@
   background: rgba(15, 23, 42, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 20px;
-  padding: 2rem;
+  padding: clamp(2rem, 3vw, 4rem);
   backdrop-filter: blur(12px);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   animation: floatSlow 6s ease-in-out infinite;
+  transform: scale(clamp(1, 1vw, 1.5));
 }
 
 .workflow-node {
@@ -393,20 +416,21 @@
   backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
-  padding: 1.25rem;
+  padding: clamp(1.25rem, 2vw, 2.5rem);
   box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
   z-index: 20;
+  transform: scale(clamp(1, 1vw, 1.5));
 }
 
 .mockup-floating-card.top-right {
-  top: 10%;
-  right: -5%;
+  top: 15%;
+  right: 5%;
   animation: floatSlow 7s ease-in-out infinite reverse;
 }
 
 .mockup-floating-card.bottom-left {
-  bottom: 10%;
-  left: -5%;
+  bottom: 15%;
+  left: 5%;
   animation: floatSlow 5s ease-in-out infinite 1s;
 }
 
