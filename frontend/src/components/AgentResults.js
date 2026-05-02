@@ -127,6 +127,34 @@ function AgentResults({ result, isCompact }) {
         <p className="agent-results-subtitle">Multi-Agent reasoning traces and outputs</p>
       </div>
 
+      {isGovernance && !isCompact && (
+        <div className="executive-summary-container">
+          <div className="executive-summary-card">
+            <h3 className="executive-summary-title">Executive Summary</h3>
+            <div className="executive-summary-content">
+              <div className="executive-summary-item">
+                <RiskGauge score={result.risk_output?.score} />
+              </div>
+              <div className="executive-summary-item decision-item">
+                <h4 className="executive-summary-label">Final Decision</h4>
+                <div className="decision-badge-huge" style={{ 
+                  backgroundColor: DECISION_META[result.governance_output?.decision]?.glow || 'rgba(51, 65, 85, 0.4)', 
+                  color: DECISION_META[result.governance_output?.decision]?.color || '#f8fafc',
+                  borderColor: DECISION_META[result.governance_output?.decision]?.color || '#475569'
+                }}>
+                  {result.governance_output?.decision ?? "UNKNOWN"}
+                </div>
+                <p className="decision-reason">{result.governance_output?.reason}</p>
+              </div>
+              <div className="executive-summary-item">
+                <h4 className="executive-summary-label" style={{marginBottom: '1rem'}}>Agent Confidence</h4>
+                <ConfidenceBar confidence={result.governance_output?.confidence || result.analysis_output?.confidence || 0.85} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className={`agent-grid ${isCompact ? 'compact' : ''}`}>
         {isGovernance ? (
           <>

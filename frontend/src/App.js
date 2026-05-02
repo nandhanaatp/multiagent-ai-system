@@ -121,6 +121,20 @@ function App() {
     return await response.json();
   };
 
+  const generateSaferPrompt = (prompt) => {
+    let lower = prompt.toLowerCase();
+    if (lower.includes("hack") || lower.includes("bypass") || lower.includes("steal") || lower.includes("unauthorized")) {
+      return "Please provide an authorized security audit report for the target system, ensuring all penetration testing guidelines and enterprise compliance policies are strictly followed.";
+    }
+    if (lower.includes("drop") || lower.includes("delete") || lower.includes("destroy") || lower.includes("remove")) {
+      return "Please generate a secure data archiving procedure that backs up the target assets before initiating any soft-deletion workflows in accordance with data retention policies.";
+    }
+    if (lower.includes("force") || lower.includes("ignore") || lower.includes("override")) {
+      return "Requesting standard procedure to perform this action following all safety protocols, requiring secondary manager approval if necessary.";
+    }
+    return "Analyze the following request while strictly enforcing enterprise security policies, ensuring no unauthorized access or data exposure occurs: " + prompt;
+  };
+
   const handleAnalyze = async () => {
     if (!problemDescription.trim()) {
       setError("Please enter a problem description");
@@ -275,6 +289,30 @@ function App() {
                   {result && !isSimulation && (
                     <>
                       <AgentResults result={result} />
+                      
+                      {result.mode === "governance" && (result.governance_output?.decision === 'BLOCK' || result.governance_output?.decision === 'REVIEW') && (
+                        <div className="prompt-suggestion-card" style={{ marginTop: '2rem', padding: '2rem', borderRadius: 'var(--radius-xl)', background: 'linear-gradient(145deg, rgba(16, 185, 129, 0.1), rgba(6, 78, 59, 0.2))', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                          <div className="prompt-suggestion-header" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+                            <ShieldCheck className="text-emerald-400" size={28} />
+                            <h3 style={{ color: '#34d399', fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>Prompt Improvement Suggestion</h3>
+                          </div>
+                          <p style={{ color: '#cbd5e1', marginBottom: '1.5rem', fontSize: '1.05rem' }}>Your prompt triggered a security policy. Try this safer, enterprise-compliant version:</p>
+                          <div className="prompt-suggestion-box" style={{ background: '#0f172a', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid #334155', color: '#f8fafc', fontStyle: 'italic', marginBottom: '1.5rem', fontSize: '1.1rem' }}>
+                            "{generateSaferPrompt(problemDescription)}"
+                          </div>
+                          <button 
+                            className="btn btn-primary"
+                            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#10b981', color: '#0f172a', fontWeight: 700, padding: '0.75rem 1.5rem' }}
+                            onClick={() => {
+                               setProblemDescription(generateSaferPrompt(problemDescription));
+                               window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                          >
+                            <Zap size={18} /> Use Suggested Prompt
+                          </button>
+                        </div>
+                      )}
+
                       {result.mode === "governance" && (
                         <ReportViewer
                           result={result}
