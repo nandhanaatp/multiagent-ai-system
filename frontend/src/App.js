@@ -16,7 +16,7 @@ import UserProfile from "./UserProfile";
 import AdminDashboard from "./AdminDashboard";
 import LandingPage from "./LandingPage";
 import { Toaster } from "react-hot-toast";
-import { Activity, Search, ShieldAlert, History as HistoryIcon, Settings, User, Menu, X, LogOut, ShieldCheck, PieChart } from "lucide-react";
+import { Activity, Search, ShieldAlert, History as HistoryIcon, Settings, User, Menu, X, LogOut, ShieldCheck, PieChart, Zap } from "lucide-react";
 import "./App.css";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
