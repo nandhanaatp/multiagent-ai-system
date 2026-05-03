@@ -52,7 +52,8 @@ async def send_block_alert(to_email: str, username: str, problem: str, risk_scor
             port=settings.smtp_port,
             username=settings.smtp_user,
             password=settings.smtp_password,
-            start_tls=True
+            use_tls=(settings.smtp_port == 465),
+            start_tls=(settings.smtp_port == 587)
         )
         logger.info(f"BLOCK alert email sent to {to_email}")
 
@@ -100,7 +101,8 @@ async def send_password_reset_email(to_email: str, username: str, reset_link: st
             port=settings.smtp_port,
             username=settings.smtp_user,
             password=settings.smtp_password,
-            start_tls=True
+            use_tls=(settings.smtp_port == 465),
+            start_tls=(settings.smtp_port == 587)
         )
         logger.info(f"Password reset email sent to {to_email}")
 
