@@ -17,10 +17,10 @@ function ForgotPassword({ onBackToLogin }) {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/forgot-password`, {
+      const response = await fetch(`${API_URL}/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ username_or_email: email }),
       });
 
       const data = await response.json();

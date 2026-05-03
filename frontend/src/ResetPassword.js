@@ -26,10 +26,10 @@ function ResetPassword({ token, onBackToLogin }) {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/reset-password?token=${token}`, {
+      const response = await fetch(`${API_URL}/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ new_password: newPassword }),
+        body: JSON.stringify({ token, new_password: newPassword }),
       });
 
       const data = await response.json();
