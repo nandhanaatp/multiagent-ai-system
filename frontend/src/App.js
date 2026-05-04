@@ -27,7 +27,7 @@ function App() {
   const [showRegister, setShowRegister] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetToken, setResetToken] = useState(null);
-  
+
   // App State
   const [activeTab, setActiveTab] = useState("analysis");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -82,14 +82,14 @@ function App() {
     if (showLogin) {
       return (
         <div style={{ position: "relative" }}>
-          <button 
-            onClick={() => setShowLogin(false)} 
+          <button
+            onClick={() => setShowLogin(false)}
             style={{ position: "absolute", top: "20px", left: "20px", zIndex: 100, padding: "8px 16px", background: "rgba(255,255,255,0.1)", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", backdropFilter: "blur(4px)" }}
           >
             ← Back to Home
           </button>
-          <Login 
-            onSwitchToRegister={() => { setShowLogin(false); setShowRegister(true); }} 
+          <Login
+            onSwitchToRegister={() => { setShowLogin(false); setShowRegister(true); }}
             onSwitchToForgot={() => { setShowLogin(false); setShowForgotPassword(true); }}
           />
         </div>
@@ -177,7 +177,7 @@ function App() {
   const isFormValid = problemDescription.trim().length >= 10 && (!isSimulation || altDescription.trim().length >= 10);
 
   const getPageTitle = () => {
-    switch(activeTab) {
+    switch (activeTab) {
       case "analysis": return "AI Analysis Hub";
       case "dashboard": return "Analytics Dashboard";
       case "history": return "Audit History";
@@ -192,7 +192,7 @@ function App() {
     <ErrorBoundary>
       <Toaster position="top-right" toastOptions={{ style: { background: '#1e293b', color: '#f8fafc', border: '1px solid #334155' } }} />
       <div className="app-container">
-        
+
         {/* Sidebar */}
         <aside className={`sidebar ${mobileMenuOpen ? 'mobile-open' : ''}`}>
           <div className="sidebar-header">
@@ -200,7 +200,7 @@ function App() {
               <ShieldCheck size={24} /> <span>AIGov Platform</span>
             </div>
           </div>
-          
+
           <nav className="sidebar-nav">
             <button className={`nav-item ${activeTab === 'analysis' ? 'active' : ''}`} onClick={() => { setActiveTab('analysis'); setMobileMenuOpen(false); }}>
               <Search /> <span>Analysis Hub</span>
@@ -220,7 +220,7 @@ function App() {
               </button>
             )}
           </nav>
-          
+
           <div className="sidebar-footer">
             <button className="nav-item text-red-400" onClick={logout}>
               <LogOut size={18} /> <span>Logout</span>
@@ -230,7 +230,7 @@ function App() {
 
         {/* Main Content Wrapper */}
         <div className="main-wrapper">
-          
+
           {/* Navbar */}
           <header className="navbar">
             <div className="navbar-left">
@@ -239,7 +239,7 @@ function App() {
               </button>
               <h1 className="page-title">{getPageTitle()}</h1>
             </div>
-            
+
             <div className="navbar-right">
               <div className="user-profile-menu" onClick={() => setActiveTab('profile')}>
                 <div className="user-info-text text-right mr-2">
@@ -256,7 +256,7 @@ function App() {
           {/* Scrollable Content Area */}
           <main className={`main-content custom-scrollbar ${activeTab === 'analysis' && !result && !loading ? 'centered-state' : ''}`}>
             <div className="content-container">
-              
+
               {sessionWarning && (
                 <div className="session-warning">
                   <span>⚠️ Your session is about to expire. Please save your work.</span>
@@ -289,7 +289,7 @@ function App() {
                   {result && !isSimulation && (
                     <>
                       <AgentResults result={result} />
-                      
+
                       {result.mode === "governance" && (result.governance_output?.decision === 'BLOCK' || result.governance_output?.decision === 'REVIEW') && (
                         <div className="prompt-suggestion-card" style={{ marginTop: '2rem', padding: '2rem', borderRadius: 'var(--radius-xl)', background: 'linear-gradient(145deg, rgba(16, 185, 129, 0.1), rgba(6, 78, 59, 0.2))', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
                           <div className="prompt-suggestion-header" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
@@ -300,12 +300,12 @@ function App() {
                           <div className="prompt-suggestion-box" style={{ background: '#0f172a', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid #334155', color: '#f8fafc', fontStyle: 'italic', marginBottom: '1.5rem', fontSize: '1.1rem' }}>
                             "{generateSaferPrompt(problemDescription)}"
                           </div>
-                          <button 
+                          <button
                             className="btn btn-primary"
                             style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#10b981', color: '#0f172a', fontWeight: 700, padding: '0.75rem 1.5rem' }}
                             onClick={() => {
-                               setProblemDescription(generateSaferPrompt(problemDescription));
-                               window.scrollTo({ top: 0, behavior: 'smooth' });
+                              setProblemDescription(generateSaferPrompt(problemDescription));
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
                             }}
                           >
                             <Zap size={18} /> Use Suggested Prompt
@@ -328,14 +328,14 @@ function App() {
                         <h2 className="sim-insight-title">
                           <Activity size={24} className="text-blue-500" /> Decision Comparison Insight
                         </h2>
-                        
+
                         <div className="sim-grid">
                           {/* Decision Change */}
                           <div className="sim-box">
                             <span className="sim-box-label">Decision Change</span>
                             <div className="sim-box-value">
-                              <span style={{ color: result.governance_output?.decision === 'BLOCK' ? '#ef4444' : '#f8fafc' }}>{result.governance_output?.decision}</span> 
-                              <span className="text-slate-500 mx-2">➔</span> 
+                              <span style={{ color: result.governance_output?.decision === 'BLOCK' ? '#ef4444' : '#f8fafc' }}>{result.governance_output?.decision}</span>
+                              <span className="text-slate-500 mx-2">➔</span>
                               <span style={{ color: altResult.governance_output?.decision === 'ALLOW' ? '#10b981' : '#f8fafc' }}>{altResult.governance_output?.decision}</span>
                             </div>
                           </div>
@@ -351,7 +351,7 @@ function App() {
                               <div className="sim-box" style={{ borderColor: isImproved ? "rgba(16, 185, 129, 0.3)" : (diff < 0 ? "rgba(239, 68, 68, 0.3)" : "") }}>
                                 <span className="sim-box-label">Risk Indicator</span>
                                 <div className="sim-box-value">
-                                  {r1} <span className="text-slate-500 mx-2">➔</span> {r2} 
+                                  {r1} <span className="text-slate-500 mx-2">➔</span> {r2}
                                   <span className="sim-box-delta" style={{ color: diffColor }}>
                                     ({isImproved ? `↓${Math.abs(diff).toFixed(1)}` : (diff < 0 ? `↑${Math.abs(diff).toFixed(1)}` : 'No Change')})
                                   </span>
@@ -371,7 +371,7 @@ function App() {
                               <div className="sim-box" style={{ borderColor: isImproved ? "rgba(16, 185, 129, 0.3)" : (diff < 0 ? "rgba(239, 68, 68, 0.3)" : "") }}>
                                 <span className="sim-box-label">Confidence Change</span>
                                 <div className="sim-box-value">
-                                  {c1.toFixed(0)}% <span className="text-slate-500 mx-2">➔</span> {c2.toFixed(0)}% 
+                                  {c1.toFixed(0)}% <span className="text-slate-500 mx-2">➔</span> {c2.toFixed(0)}%
                                   <span className="sim-box-delta" style={{ color: diffColor }}>
                                     ({isImproved ? `↑${Math.abs(diff).toFixed(0)}%` : (diff < 0 ? `↓${Math.abs(diff).toFixed(0)}%` : 'No Change')})
                                   </span>

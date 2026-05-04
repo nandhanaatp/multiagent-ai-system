@@ -434,6 +434,42 @@ async def get_admin_stats(admin: User = Depends(get_admin_user), db: Session = D
         decisions=decisions
     )
 
+@app.get("/admin/activity")
+async def get_admin_activity(admin: User = Depends(get_admin_user), db: Session = Depends(get_db), limit: int = 20):
+    """Get latest system-wide query activity (Admin only)"""
+    queries = (
+        db.query(Query, User.username)
+        .join(User, Query.user_id == User.user_id)
+        .order_by(Query.created_at.desc())
+        .limit(limit)
+        .all()
+    )
+    
+    activity = []
+    for q, username in queries:
+        tasks = db.query(Task).filter(Task.query_id == q.query_id).all()
+        final_decision = None
+        for task in tasks:
+            if task.agent_name in ["GovernanceAgent", "ValidationAgent"]:
+                resp = db.query(Response).filter(Response.task_id == task.task_id).first()
+                if resp:
+                    try:
+                        data = json.loads(resp.response_text)
+                        final_decision = data.get("decision")
+                    except Exception:
+                        pass
+        
+        activity.append({
+            "query_id": q.query_id,
+            "username": username,
+            "query_text": q.query_text,
+            "risk_score": q.risk_score,
+            "risk_level": q.risk_level,
+            "final_decision": final_decision,
+            "created_at": q.created_at.isoformat()
+        })
+    return activity
+
 
 @app.post("/auth/refresh", response_model=Token)
 async def refresh_token(response: FastAPIResponse, current_user: User = Depends(get_current_user)):
